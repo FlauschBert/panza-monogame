@@ -10,7 +10,7 @@ public class Runner : Game {
 
 private GraphicsDeviceManager _graphics;
 private SpriteBatch _spriteBatch;
-private List<Tank> _tanks;
+private Tank[] _tanks;
 
 public Runner()
 {
@@ -22,15 +22,14 @@ public Runner()
 protected override 
 void Initialize()
 {
-  _tanks = new List<Tank>();
-  _tanks.Add(new Tank() {
-    FileName="tank01",
-    Position=new Vector2(50,50)
-  });
-  _tanks.Add(new Tank() {
-    FileName="tank02",
-    Position=new Vector2(300,50)
-  });
+  Vector2 windowSize = new Vector2 (
+    this.Window.ClientBounds.Width,
+    this.Window.ClientBounds.Height
+  );
+  _tanks = new Tank[2] { 
+    new Tank(0,windowSize),
+    new Tank(1,windowSize)
+  };
 
   base.Initialize();
 }
@@ -40,9 +39,12 @@ void LoadContent()
 {
   _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-  foreach(Tank tank in _tanks)
+  for(int i = 0; i < _tanks.Length; ++i)
   {
-    tank.Sprite = Content.Load<Texture2D>(tank.FileName);
+    var tank = _tanks[i];
+    var defaultTank = DefaultTank.GetTank(i);
+    tank.TankSprite = Content.Load<Texture2D>(defaultTank.TankFileName);
+    tank.GunSprite = Content.Load<Texture2D>(defaultTank.GunFileName);
   }
 }
 
@@ -65,7 +67,7 @@ void Draw(GameTime gameTime)
 
   _spriteBatch.Begin();
   foreach(Tank tank in _tanks)
-    _spriteBatch.Draw(tank.Sprite, tank.Position, Color.White);
+    _spriteBatch.Draw(tank.TankSprite, tank.Position, Color.White);
   _spriteBatch.End();
 
   base.Draw(gameTime);
